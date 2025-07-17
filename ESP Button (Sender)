@@ -1,9 +1,13 @@
+// Include these libraries to use ESP-NOW
 #include <esp_now.h>
 #include <WiFi.h>
 
+// Delcaring a constant integer, Pins connected to their respected GPIO pins
 const int buttonPin = 4;
 const int ledPin = 23; 
+// Declaring the current state of the button
 int buttonState = 0;
+// Stores the previous state of the button, initializing it to high (meaning button is not pressed if using pull-up resistor)
 int lastButtonState = HIGH;
 
 // REPLACE WITH YOUR RECEIVER MAC Address
@@ -11,8 +15,11 @@ uint8_t broadcastAddress[] = {0x68, 0x25, 0xdd, 0x48, 0xe2, 0xa0};
 
 // Structure example to send data
 // Must match the receiver structure
+// Declares a new structure type
+// typedef lets us create an alias for the struct
 typedef struct struct_message {
 
+//Defines a member variable inside the struct and an array of 4 characters
 char command[4];
 
 } struct_message;
