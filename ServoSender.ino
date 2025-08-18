@@ -1,8 +1,8 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-const int X_AXIS_PIN = 32;
-const int Y_AXIS_PIN = 33;
+const int X_AXIS_PIN = 34;
+const int Y_AXIS_PIN = 2;
 
 
 // REPLACE WITH YOUR RECEIVER MAC Address
@@ -43,7 +43,7 @@ void setup() {
 
   // Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Trasnmitted packet
-  esp_now_register_send_cb(OnDataSent);
+ 
 
   // Register peer
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
