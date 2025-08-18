@@ -58,8 +58,8 @@ void setup() {
   // Once ESPNow is successfully Init, we will register for recv CB to
   // get recv packer info
   esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
-  servoX.attach(4);
-  //servoY.attach(3);
+  servoX.attach(18);
+  servoY.attach(25);
 
   Serial.println("Receiver is ready to receive data.");
 }
