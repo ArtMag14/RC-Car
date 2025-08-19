@@ -2,7 +2,7 @@
 #include <WiFi.h>
 
 const int X_AXIS_PIN = 34;
-const int Y_AXIS_PIN = 2;
+const int Y_AXIS_PIN = 35;
 
 
 // REPLACE WITH YOUR RECEIVER MAC Address
