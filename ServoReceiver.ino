@@ -59,7 +59,7 @@ void setup() {
   // get recv packer info
   esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
   servoX.attach(18);
-  servoY.attach(25);
+  servoY.attach(19);
 
   Serial.println("Receiver is ready to receive data.");
 }
