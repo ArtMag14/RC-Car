@@ -1,22 +1,23 @@
-#include <esp_now.h>
-#include <WiFi.h>
-#include <ESP32Servo.h>
+#include <esp_now.h> // Essential for using ESP-NOW protocol
+#include <WiFi.h> // Required to initialize wireless hardware; Wi-Fi radio functions
+#include <ESP32Servo.h> // Required to control servo motors; handles complexities of control signals for servos
 
-const int ENA = 14;  //
-const int ENB = 32;  //
-const int IN1 = 27;  //
-const int IN2 = 26;  //
-const int IN3 = 25;  //
-const int IN4 = 33;  //
+const int ENA = 14;  // Enable pins for motor channels A & B; connected to PWM-capable pins
+const int ENB = 32;  //       Varying PWM signals = controling speed of motors
+const int IN1 = 27;  // Input pins
+const int IN2 = 26;  //       for motor driver
+const int IN3 = 25;  //            controling direction of each motor
+const int IN4 = 33;  //                      by setting Pins HIGH or LOW in specific pairs                                      
 
 Servo servoX;
 Servo servoY;
 
 // Structure example to receive data
 // Must match the sender structure
+// Any variable created of 'typedef' will have the inside components inside it
 typedef struct struct_message {
-  int joyX;
-  int joyY;
+  int joyX;  // Hold values from the analog joystick 
+  int joyY;  //     Values are used to control the car's 
   int16_t x;
   int16_t y;
 } struct_message;
