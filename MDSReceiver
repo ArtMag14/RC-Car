@@ -1,1 +1,114 @@
+#include <esp_now.h>
+#include <WiFi.h>
+#include <ESP32Servo.h>
 
+const int ENA = 14;  //
+const int ENB = 32;  //
+const int IN1 = 27;  //
+const int IN2 = 26;  //
+const int IN3 = 25;  //
+const int IN4 = 33;  //
+
+Servo servoX;
+Servo servoY;
+
+// Structure example to receive data
+// Must match the sender structure
+typedef struct struct_message {
+  int joyX;
+  int joyY;
+  int16_t x;
+  int16_t y;
+} struct_message;
+
+// Create a struct_message called myData
+struct_message myData;
+
+// callback function that will be executed when data is received
+void OnDataRecv(const uint8_t *mac_addr, esp_now_send_status_t *status, int len) {
+  if (len == sizeof(myData)) {
+    memcpy(&myData, status, sizeof(myData));
+    Serial.printf("Joystick X: %d Y: %d\n", myData.x, myData.y);
+    driveMotors(myData.x, myData.y);
+    Serial.print("Received X:");
+    Serial.print("incomingData.joyX");
+    Serial.print(" | Y:");
+    Serial.println(myData.joyY);
+
+    int servoAngleX = map(myData.joyX, 0, 4095, 0, 180);
+    int servoAngleY = map(myData.joyY, 0, 4095, 0, 180);
+
+    servoAngleX = constrain(servoAngleX, 0, 180);
+    // servoAngleY = constrain(servoAngleY, 0, 180);
+
+    Serial.print("Servo X Angle:");
+    Serial.println(servoAngleX);
+    //Serial.print("Servo Y Angle:");
+    //Serial.println(servoAngleY);
+
+    servoX.write(servoAngleX);
+    servoY.write(servoAngleY);
+  } else {
+    Serial.println("Received data length mismatch.");
+  }
+}
+
+void driveMotors(int16_t x, int16_t y) {
+  int deadzone = 100;
+  if (abs(x) < deadzone) x = 0;
+  if (abs(y) < deadzone) y = 0;
+
+  int16_t motorA = y + x;
+  int16_t motorB = y - x;
+
+  motorA = map(motorA, -1000, 1000, -255, 255);
+  motorB = map(motorB, -1000, 1000, -255, 255);
+
+  setMotor(ENA, IN1, IN2, motorA);
+  setMotor(ENB, IN3, IN4, motorB);
+}
+void setMotor(int pwmPin, int dirPin1, int dirPin2, int speed) {
+  if (speed > 0) {
+    digitalWrite(dirPin1, HIGH);
+    digitalWrite(dirPin2, LOW);
+    analogWrite(pwmPin, speed);
+  } else if (speed < 0) {
+    digitalWrite(dirPin1, LOW);
+    digitalWrite(dirPin2, HIGH);
+    analogWrite(pwmPin, -speed);
+  } else {
+    digitalWrite(dirPin1, LOW);
+    digitalWrite(dirPin2, LOW);
+    analogWrite(pwmPin, 0);
+  }
+}
+void setup() {
+  // Initialize Serial Monitor
+  Serial.begin(115200);
+  // Set device as a Wi-Fi Station
+  WiFi.mode(WIFI_STA);
+
+  // Init ESP-NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
+
+  // Once ESPNow is successfully Init, we will register for recv CB to
+  // get recv packer info
+  esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
+  servoX.attach(18);
+  servoY.attach(19);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(ENA, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  pinMode(ENB, OUTPUT);
+
+  Serial.println("Receiver is ready to receive data.");
+}
+
+void loop() {
+  delay(100);
+}
